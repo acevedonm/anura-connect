@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Rake::Task, 'anura:branding' do
+RSpec.describe Rake::Task do
   subject(:task) { described_class['anura:branding'] }
 
   let(:enterprise_path) { Rails.root.join('enterprise') }
