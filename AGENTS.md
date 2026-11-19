@@ -85,7 +85,10 @@
 ## PR Description Format
 
 - Start with a short, user-facing paragraph describing the product change.
-- Add a `Closes` section with relevant issue links (GitHub, Linear, etc.).
+- Anura Connect uses Trello for task tracking. Linear is not required; do not suggest installing or connecting it for this workflow.
+- Every PR must link an associated Trello card. Confirm an existing card or create the appropriate card before opening the PR; do not invent card references.
+- For medium/large features, link the design/PRD/implementation artifact in both the Trello card and the PR, keeping them aligned with the final scope.
+- Add a `Closes` section with the Trello card and any relevant GitHub issues. Linking a Trello card does not automatically close or move it.
 - For feature PRs, add `How to test` from a product/UX standpoint.
 - For bugfix PRs, use `How to reproduce` when helpful.
 - Optionally add a `What changed` section for implementation highlights.
