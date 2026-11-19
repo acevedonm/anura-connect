@@ -1,6 +1,12 @@
+# Anura builds Community by default; licensed EE builds must opt in explicitly.
+ARG CHATWOOT_EDITION=ce
+
 # pre-build stage
 FROM node:24.22.1-alpine as node
 FROM ruby:3.4.4-alpine3.21 AS pre-builder
+
+ARG CHATWOOT_EDITION
+ENV CW_EDITION=${CHATWOOT_EDITION}
 
 ARG NODE_VERSION="24.22.1"
 ARG PNPM_VERSION="10.2.0"
@@ -76,6 +82,13 @@ RUN pnpm i
 
 COPY . /app
 
+# Match upstream's CE build before Rails loads initializers or compiles assets.
+RUN case "$CHATWOOT_EDITION" in \
+  ce) rm -rf /app/enterprise /app/spec/enterprise ;; \
+  ee) test -d /app/enterprise ;; \
+  *) echo "CHATWOOT_EDITION must be ce or ee" >&2; exit 1 ;; \
+  esac
+
 # creating a log directory so that image wont fail when RAILS_LOG_TO_STDOUT is false
 # https://github.com/chatwoot/chatwoot/issues/701
 RUN mkdir -p /app/log
@@ -101,6 +114,9 @@ RUN rm -rf /gems/ruby/3.4.0/cache/*.gem \
 
 # final build stage
 FROM ruby:3.4.4-alpine3.21
+
+ARG CHATWOOT_EDITION
+ENV CW_EDITION=${CHATWOOT_EDITION}
 
 ARG NODE_VERSION="24.22.1"
 ARG PNPM_VERSION="10.2.0"
