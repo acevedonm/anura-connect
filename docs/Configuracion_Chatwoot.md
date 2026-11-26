@@ -63,10 +63,11 @@ En **Meta Business Suite → Configuración → Integraciones → Enrutamiento d
 Comparte las credenciales de Facebook y puede usar la misma bandeja de Chatwoot, pero **recibe los eventos por otro webhook**.
 
 1. En la página de Facebook → **Configuración → Cuentas vinculadas**, comprobar que esté conectada la cuenta profesional de Instagram correcta.
-2. En **Super Admin → Channels → Messenger**, completar **Instagram Verify Token** con otra cadena aleatoria segura y guardar.
-3. En Meta → **Caso de uso API de Instagram → Configuración con inicio de sesión de Facebook**, agregar los permisos de mensajería que ofrece esa sección.
-4. En los webhooks del objeto **Instagram**, configurar:
+2. Para las pruebas con la app en desarrollo, ir a **Meta Developers → tu app → Roles de la app → Agregar personas** y agregar la cuenta de Instagram como **Evaluador de Instagram**. Desde esa cuenta, aceptar la invitación en **Instagram → Apps y sitios web**. [Abrir roles de Anura Connect](https://developers.facebook.com/apps/1714803916827986/roles/roles/?business_id=1643489773887844).
+3. En **Super Admin → Channels → Messenger**, completar **Instagram Verify Token** con otra cadena aleatoria segura y guardar.
+4. En Meta → **Caso de uso API de Instagram → Configuración con inicio de sesión de Facebook**, agregar los permisos de mensajería que ofrece esa sección.
+5. En los webhooks del objeto **Instagram**, configurar:
    - **URL:** `https://TU-DOMINIO-CHATWOOT/webhooks/instagram`
    - **Token:** el mismo **Instagram Verify Token** de Chatwoot.
-5. Verificar y guardar. Suscribirse a `messages`, `messaging_seen` y `message_reactions` cuando estén disponibles.
-6. Al conectar la página en Chatwoot, autorizar también el acceso a Instagram. Si la página ya estaba conectada antes de agregar esos permisos, reautorizarla desde Chatwoot.
+6. Verificar y guardar. Suscribirse a `messages`, `messaging_seen` y `message_reactions` cuando estén disponibles.
+7. Al conectar la página en Chatwoot, autorizar también el acceso a Instagram. Si la página ya estaba conectada antes de agregar esos permisos, reautorizarla desde Chatwoot.
