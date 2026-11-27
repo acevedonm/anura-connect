@@ -1,12 +1,16 @@
-# Anura builds Community by default; licensed EE builds must opt in explicitly.
-ARG CHATWOOT_EDITION=ce
-
 # pre-build stage
 FROM node:24.22.1-alpine as node
-FROM ruby:3.4.4-alpine3.21 AS pre-builder
 
-ARG CHATWOOT_EDITION
-ENV CW_EDITION=${CHATWOOT_EDITION}
+# npm and corepack are only needed to build assets and to install pnpm in
+# non-production images; production only runs the node binary
+FROM node AS node-modules
+ARG RAILS_ENV=production
+RUN if [ "$RAILS_ENV" = "production" ]; then \
+  rm -rf /usr/local/lib/node_modules/* \
+  && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack; \
+  fi
+
+FROM ruby:3.4.13-alpine3.23 AS pre-builder
 
 ARG NODE_VERSION="24.22.1"
 ARG PNPM_VERSION="10.2.0"
@@ -82,13 +86,6 @@ RUN pnpm i
 
 COPY . /app
 
-# Match upstream's CE build before Rails loads initializers or compiles assets.
-RUN case "$CHATWOOT_EDITION" in \
-  ce) rm -rf /app/enterprise /app/spec/enterprise ;; \
-  ee) test -d /app/enterprise ;; \
-  *) echo "CHATWOOT_EDITION must be ce or ee" >&2; exit 1 ;; \
-  esac
-
 # creating a log directory so that image wont fail when RAILS_LOG_TO_STDOUT is false
 # https://github.com/chatwoot/chatwoot/issues/701
 RUN mkdir -p /app/log
@@ -96,7 +93,7 @@ RUN mkdir -p /app/log
 # generate production assets if production environment
 RUN if [ "$RAILS_ENV" = "production" ]; then \
   SECRET_KEY_BASE=precompile_placeholder RAILS_LOG_TO_STDOUT=enabled bundle exec rake assets:precompile \
-  && rm -rf spec node_modules tmp/cache; \
+  && rm -rf spec tests node_modules tmp/cache; \
   fi
 
 # Railway source snapshots do not include .git; use its supplied commit SHA.
@@ -113,10 +110,7 @@ RUN rm -rf /gems/ruby/3.4.0/cache/*.gem \
   && rm .gitignore
 
 # final build stage
-FROM ruby:3.4.4-alpine3.21
-
-ARG CHATWOOT_EDITION
-ENV CW_EDITION=${CHATWOOT_EDITION}
+FROM ruby:3.4.13-alpine3.23
 
 ARG NODE_VERSION="24.22.1"
 ARG PNPM_VERSION="10.2.0"
@@ -140,7 +134,8 @@ ARG RAILS_ENV=production
 ENV RAILS_ENV ${RAILS_ENV}
 ENV BUNDLE_PATH="/gems"
 
-RUN apk update && apk add --no-cache \
+# apk upgrade picks up Alpine security fixes released after the base image
+RUN apk update && apk upgrade --no-cache && apk add --no-cache \
   build-base \
   openssl \
   tzdata \
@@ -154,7 +149,7 @@ RUN apk update && apk add --no-cache \
 ENV VIPS_BLOCK_UNTRUSTED=1
 
 COPY --from=node /usr/local/bin/node /usr/local/bin/
-COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node-modules /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 RUN if [ "$RAILS_ENV" != "production" ]; then \
   apk add --no-cache curl \

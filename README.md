@@ -1,20 +1,3 @@
-## Anura Connect — AC-017
-
-Branding mínimo según arquitectura v1.2 (DEC-016 y DEC-023): nombre y logos en
-`lib/tasks/anura.rake` y `public/brand-assets/anura/`; acento verde en
-`_anura-branding.scss` y `theme/colors.js`, importado desde `_woot.scss` y
-`app/javascript/v3/App.vue`; iconos del navegador en
-`app/views/layouts/vueapp.html.erb`. Se conservan las paletas
-nativas de estados y azul, las atribuciones y la licencia de Chatwoot.
-La imagen Docker se construye como Community por defecto, sin `enterprise/`.
-En instalaciones nuevas o existentes, aplicar explícitamente `bundle exec rails anura:branding`
-después de desplegar todos los procesos Community; actualiza el nombre y los tres
-valores de logos y limpia el aviso residual de una imagen Enterprise anterior.
-La tarea rechaza instalaciones que todavía contienen `enterprise/`.
-Ver [despliegue y validación Community](docs/ANURA_COMMUNITY.md).
-No agregarlo al arranque. Al actualizar upstream, revisar esos puntos y comprobar
-login, dashboard y temas claro/oscuro. El icono actual es de 64 px; PWA no validada.
-
 <img src="./.github/screenshots/header.png#gh-light-mode-only" width="100%" alt="Header light mode"/>
 <img src="./.github/screenshots/header-dark.png#gh-dark-mode-only" width="100%" alt="Header dark mode"/>
 
